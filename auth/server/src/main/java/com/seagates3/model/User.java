@@ -20,6 +20,8 @@
 
 package com.seagates3.model;
 
+import java.util.List;
+
 public class User {
 
     public enum UserType {
@@ -61,6 +63,8 @@ public class User {
      * from federated user or IAM user.
      */
     private String roleName;
+    private
+     List<String> policyIds;
 
     public String getName() {
         return name;
@@ -171,4 +175,10 @@ public class User {
 
    public
     void setArn(String arn) { this.arn = arn; }
+
+   public
+    List<String> getPolicyIds() { return policyIds; }
+
+   public
+    void setPolicyIds(List<String> policyIds) { this.policyIds = policyIds; }
 }

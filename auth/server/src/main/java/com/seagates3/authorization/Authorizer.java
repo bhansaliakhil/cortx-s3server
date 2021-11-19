@@ -55,6 +55,7 @@ import com.seagates3.response.ServerResponse;
 import com.seagates3.response.generator.AuthorizationResponseGenerator;
 import com.seagates3.util.BinaryUtil;
 import io.netty.handler.codec.http.HttpResponseStatus;
+import com.seagates3.policy.IAMPolicyAuthorizer;
 
 public
 class Authorizer {
@@ -80,6 +81,28 @@ class Authorizer {
     AuthorizationResponseGenerator responseGenerator =
         new AuthorizationResponseGenerator();
     String mainOperation = requestBody.get("S3Action");
+
+    // Authorize IAM Policy
+    serverResponse =
+        new IAMPolicyAuthorizer().authorizePolicy(requestor, requestBody);
+    /* If mainOperation is NULL means call is for IAM operation. eg-
+     * ListAccessKeys so return
+     *     whatever is iam policy authorization response. Dont go for Bucket
+     * policy authorization.
+     * If mainOperation is not null means its s3 operation authorization call.
+     * so check first iam policy-
+     *     if iam policy response is not null and not ok then return
+     * AccessDenied.Dont check bucket policy auth.
+     *     if iam policy authorization response is either null or ok then check
+     * bucket policy auth
+     */
+
+    if (mainOperation == null ||
+        (serverResponse != null &&
+         serverResponse.getResponseStatus() != HttpResponseStatus.OK)) {
+      return serverResponse;
+    }
+
     // Deny access if any action is restricted for public access
     if (requestor == null &&
         PublicAccessAuthorizer.getInstance().isActionRestricted(requestBody)) {

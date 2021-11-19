@@ -25,6 +25,8 @@ public class Requestor {
     private String id, name;
     private Account account;
     private AccessKey accessKey;
+    private
+     User user;
 
     /*
      * Return the requestor id.
@@ -77,4 +79,9 @@ public class Requestor {
     public Boolean isFederatedUser() {
         return accessKey.getToken() != null;
     }
+    public
+     User getUser() { return user; }
+
+    public
+     void setUser(User user) { this.user = user; }
 }

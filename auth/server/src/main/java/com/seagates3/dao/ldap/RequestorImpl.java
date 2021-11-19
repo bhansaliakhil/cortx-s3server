@@ -38,6 +38,8 @@ import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.seagates3.dao.UserDAO;
+import com.seagates3.model.User;
 
 public class RequestorImpl implements RequestorDAO {
 
@@ -96,6 +98,7 @@ public class RequestorImpl implements RequestorDAO {
 
                 String accountName = getAccountName(entry.getDN());
                 requestor.setAccount(getAccount(accountName));
+                requestor.setUser(getUser(accountName, accessKey.getUserId()));
                 lc.abandon(ldapResults);
             } else {
                 LOGGER.error("Failed to find access key details of userId: "
@@ -142,6 +145,16 @@ public class RequestorImpl implements RequestorDAO {
                 DAOResource.ACCOUNT);
         LOGGER.debug("Finding account: " + accountName);
         return accountDao.find(accountName);
+    }
+
+    /**
+         * Get the User details of UserId passed.
+         */
+   private
+    User getUser(String accountName, String userId) throws DataAccessException {
+      UserDAO userDao = (UserDAO)DAODispatcher.getResourceDAO(DAOResource.USER);
+      LOGGER.debug("Finding user: " + userId);
+      return userDao.findByUserId(accountName, userId);
     }
 }
 

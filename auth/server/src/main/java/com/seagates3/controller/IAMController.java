@@ -382,6 +382,8 @@ class IAMController {
         LOGGER.error(e.getServerResponse().getResponseBody());
         return e.getServerResponse();
       }
+      // Authorize with IAM Policy
+      serverResponse = new Authorizer().authorize(requestor, requestBody);
     }
 
     return performAction(resourceMap, requestBody, requestor);

@@ -21,7 +21,7 @@
 package com.seagates3.dao.ldap;
 
 import java.util.ArrayList;
-
+import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -170,7 +170,8 @@ public class UserImpl implements UserDAO {
 
      String[] attrs = {LDAPUtils.COMMON_NAME,  LDAPUtils.PATH,
                        LDAPUtils.ARN,          LDAPUtils.ROLE_NAME,
-                       LDAPUtils.OBJECT_CLASS, LDAPUtils.CREATE_TIMESTAMP};
+                       LDAPUtils.OBJECT_CLASS, LDAPUtils.CREATE_TIMESTAMP,
+                       LDAPUtils.POLICY_ID};
      String userBaseDN = String.format(
          "%s=%s,%s=%s,%s=%s,%s", LDAPUtils.ORGANIZATIONAL_UNIT_NAME,
          LDAPUtils.USER_OU, LDAPUtils.ORGANIZATIONAL_NAME, accountName,
@@ -201,7 +202,8 @@ public class UserImpl implements UserDAO {
                       " account: " + accountName);
          throw new DataAccessException("Failed to find user details.\n" + ex);
        }
-
+       user.setPolicyIds(Arrays.asList(
+           ldapEntry.getAttribute(LDAPUtils.POLICY_ID).getStringValueArray()));
        user.setName(
            ldapEntry.getAttribute(LDAPUtils.COMMON_NAME).getStringValue());
        user.setUserType(
